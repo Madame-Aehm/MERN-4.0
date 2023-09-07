@@ -2,6 +2,7 @@ import { useState, FormEvent, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { User } from "../@types";
 import Heatmap from "../components/Heatmap";
+import HeatmapCal from "../components/HeatmapCal";
 
 const CreateActivityForm = () => {
   //   const [organiser, setOrganiser] = useState("");
@@ -117,7 +118,10 @@ const CreateActivityForm = () => {
       <br />
       <button type="submit">Create!</button>
     </form>
-    { user && <Heatmap />}
+    <hr />
+    { user && <Heatmap user={user}/>}
+    <hr />
+    { user && <HeatmapCal user={user} /> }
     </>
   );
 };

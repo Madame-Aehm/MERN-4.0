@@ -2,24 +2,20 @@
 import { HeatMapGrid } from 'react-grid-heatmap'
 import { generateY } from '../utils/generate-y-cells';
 import { DataListList, User } from '../@types';
-import { useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useState } from 'react';
 
-function Heatmap() {
-  const { user } = useContext(AuthContext);
+function Heatmap({ user }: { user: User }) {
   const [userToFind, setUserToFind] = useState("");
-  const [users, setUsers] = useState(user ? [user] : []);
+  const [users, setUsers] = useState([user]);
 
   const xLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const yLabels: string[] = [];
   const usersActivities: DataListList = []; 
 
   users.forEach((u) => {
-    if (u) {
-      const userInfo = generateY(u);
-      usersActivities.push(userInfo.activityList);
-      yLabels.push(userInfo.yLabel);
-    }
+    const userInfo = generateY(u);
+    usersActivities.push(userInfo.activityList);
+    yLabels.push(userInfo.yLabel);
   })
 
   const data = new Array(yLabels.length)
