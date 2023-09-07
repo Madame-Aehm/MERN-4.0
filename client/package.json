@@ -12,14 +12,24 @@
   "dependencies": {
     "bootstrap": "^5.3.1",
     "react": "^18.2.0",
+<<<<<<< HEAD
     "react-calendar-heatmap": "^1.9.0",
+=======
+    "react-bootstrap": "^2.8.0",
+    "react-datepicker": "^4.16.0",
+>>>>>>> 519366892ddce4d741ed205afe9596e29653f68f
     "react-dom": "^18.2.0",
     "react-grid-heatmap": "^1.3.0",
     "react-router-dom": "^6.15.0"
   },
   "devDependencies": {
+    "@types/bootstrap": "^5.2.6",
     "@types/react": "^18.2.15",
+<<<<<<< HEAD
     "@types/react-calendar-heatmap": "^1.6.3",
+=======
+    "@types/react-datepicker": "^4.15.0",
+>>>>>>> 519366892ddce4d741ed205afe9596e29653f68f
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",

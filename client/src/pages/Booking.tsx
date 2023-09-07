@@ -1,5 +1,6 @@
-import { useState, FormEvent, useContext } from "react";
+import { useState, FormEvent, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
+
 import { User } from "../@types";
 import Heatmap from "../components/Heatmap";
 import HeatmapCal from "../components/HeatmapCal";
@@ -8,9 +9,20 @@ const CreateActivityForm = () => {
   //   const [organiser, setOrganiser] = useState("");
   const { user, setUser } = useContext(AuthContext);
   const [participants, setParticipants] = useState<User[]>([]);
+
+import ActivityView from "../components/ActivityView";
+import { Sports_activity } from "../@types";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+const CreateActivityForm = () => {
+  const { user } = useContext(AuthContext);
+  const [participants, setParticipants] = useState([]);
+  const [activities, setActivities] = useState<Sports_activity[]>([]);
+
   const [activity, setActivity] = useState("");
   const [duration, setDuration] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date());
 
   const [userToFind, setUserToFind] = useState("");
 
@@ -47,7 +59,7 @@ const CreateActivityForm = () => {
       participants,
       activity,
       duration,
-      date,
+      date: date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "2-digit" }),
     };
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_BASE}api/activities/new`, {
@@ -63,6 +75,10 @@ const CreateActivityForm = () => {
         console.log(result);
         setUser(result.user);
         resetFields();
+        setActivity("");
+        setDuration("");
+        setDate(new Date());
+
       } else {
         const error = await response.json();
         alert(error.message);
@@ -73,12 +89,31 @@ const CreateActivityForm = () => {
     }
   };
 
+  const fetchActivities = async () => {
+    try {
+      const requestOptions = {
+        method: "GET",
+      };
+
+      const response = await fetch("http://localhost:5000/api/activities/all", requestOptions);
+      const result = await response.json();
+      setActivities(result);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await createActivity();
   };
 
   return (
+<>
     <>
       <h3>Create new Activity:</h3>
       <label>
@@ -123,6 +158,37 @@ const CreateActivityForm = () => {
     <hr />
     { user && <HeatmapCal user={user} /> }
     </>
+
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", gap: 30 }}>
+      <form onSubmit={handleSubmit}>
+        <h3>Create new Activity:</h3>
+        <br />
+        <label>
+          Participants:
+          <input type="text" value={participants} onChange={(e) => setParticipants(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          Activity:
+          <input type="text" value={activity} onChange={(e) => setActivity(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          Duration:
+          <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          Date:
+          <DatePicker selected={date} onChange={(date) => setDate(date)} dateFormat="dd/MM/yy" />
+        </label>
+        <br />
+        <button type="submit">Create!</button>
+      </form>
+
+      {activities && activities.map((activity, idx) => <ActivityView key={idx} activityProps={activity} />)}
+    </div>
+</>
   );
 };
 
