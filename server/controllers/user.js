@@ -173,6 +173,7 @@ const login = async (req, res) => {
       username: existingUser.username,
       createdAt: existingUser.createdAt,
       profile_pic: existingUser.profile_pic,
+      sports_activities: existingUser.sports_activities
     };
     console.log(forFront);
     res.status(200).json({

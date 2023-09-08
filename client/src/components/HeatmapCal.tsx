@@ -1,23 +1,26 @@
-import { User, sports_activities } from '../@types'
+import { Sports_activity, User } from '../@types'
 import CalendarHeatmap from 'react-calendar-heatmap';
 import './heatmap.css'
 import { useEffect, useState } from 'react';
+import generateValues from '../utils/generateValues';
 
 type Props = { user: User }
 
-interface FullObject { date: string, count: sports_activities[] }
+interface FullObject { date: string, count: Sports_activity[] }
 interface ValueObject { date: string, count: number }
 
 function HeatmapCal({ user }: Props) {
+  const [fullValues, setFullValues] = useState<FullObject[]>([]);
   const [values, setValues] = useState<ValueObject[]>([]);
   const year = new Date().getFullYear();
   const startDate = new Date("01/01/"+year);
   const endDate = new Date(new Date("12/31/"+year).setHours(23, 59, 59));
+
   useEffect(() => {
     const findValues = generateValues(user);
     setValues(findValues.data2);
-
-  }, [])
+    setFullValues(findValues.data1)
+  }, [user])
   // console.log(values)
   
   return (
@@ -26,11 +29,22 @@ function HeatmapCal({ user }: Props) {
       startDate={startDate}
       endDate={endDate}
       values={values}
+      onClick={(value) => {
+        if (value) {
+          let string = "Today you have ";
+          const eq = fullValues.find((d) => d.date === value.date);
+          eq && eq.count.forEach((e, i) => {
+            i === 0 ? string = string + e.activity : string = string + ` & ${e.activity}`
+          })
+          alert(string)
+        } else alert("No activities today");
+      }}
+      showWeekdayLabels
       classForValue={(value) => {  
         if (!value) {
           return 'color-empty';
         }
-        return `color-scale-${value.count}`;
+        return `color-gitlab-${value.count > 4 ? 4 : value.count}`;
       }}
     />
   )
@@ -38,25 +52,3 @@ function HeatmapCal({ user }: Props) {
 
 export default HeatmapCal
 
-function generateValues (user: User): { data1: FullObject[], data2: ValueObject[] } {
-  const data1: FullObject[] = [];
-  const data2: ValueObject[] = [];
-  user.sports_activities.forEach((sa, x) => {
-    if (x === 0) data1.push({ date: sa.date, count: [sa] });
-    else {
-      for (let i = 0; i < data1.length; i++) {
-        if (sa.date === data1[i].date) {
-          data1[i].count.push(sa);
-          break;
-        } 
-        if (i === data1.length - 1) {
-          data1.push({ date: sa.date, count: [sa] })
-        }
-      }
-    }
-  })
-  data1.forEach((d) => data2.push({ date: d.date, count: d.count.length }))
-  console.log("data1", data1, "data2", data2)
-
-  return {data1, data2}
-}
